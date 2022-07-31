@@ -1,0 +1,112 @@
+{%  extends 'store/main2.html' %}
+{% load static %}
+{% block content %}
+
+<style>
+	.profile-pic{
+		max-width: 200px;
+		max-height:200px;
+		margin: 0 auto;
+		border-radius: 50%;
+	}
+	.brand-logo {
+		height: 200px;
+		width: 200px;
+	   
+		margin: auto;
+		border-radius: 50%;
+		box-sizing: border-box;
+		box-shadow: 7px 7px 10px #cbced1, -7px -7px 10px white;
+	  }
+	.col-md-3 {
+		margin: 0;
+		
+		
+		background: #ecf0f3;
+		display: flex;
+		align-items: center;
+		text-align: center;
+		justify-content: center;
+		place-items: center;
+		overflow: hidden;
+		font-family: poppins;
+	}
+	
+		
+		
+		background: #ecf0f3;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		place-items: center;
+		overflow: hidden;
+		font-family: poppins;
+	}
+	.text-centteer {
+		text-align: left;
+		margin-top: 30px;
+		display: block;
+		width: 100%;
+		padding: 0;
+		border: 10px;
+		outline: none;
+		box-sizing: border-box;
+	}
+	.inputs {
+		background: #ecf0f3;
+		padding: 10px;
+		padding-left: 20px;
+		height: 50px;
+		font-size: 14px;
+		border-radius: 50px;
+		box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
+	  }
+	
+	  
+</style>
+
+<br><br>
+{% if request.user.is_authenticated %}
+	<div class="row">
+	<div class="col-md-3">
+		<div class="">
+			<a class="btn btn-success" href="{% url 'store' %}"> &#8592; Back to Home</a>
+			<hr>
+			<h3 style="text-align: center">Profile Pic</h3>
+			<hr>
+			{% if request.user.customer.profile_pic %}
+			<img class="brand-logo" src="{{request.user.customer.profile_pic.url}}" >
+			{% else %}
+			<img class="profile-pic" src="{% static 'images/defaultimg.png' %}" >
+			{% endif %}
+		
+		</div>
+	</div>
+	<div class="col-md-9">
+		<div class="card card-body">
+			<div class="text-centteer">
+				<h5 class="inputs"> Username: {{ user}}</h5><br>
+				<h5 class="inputs"> Email: {{user.email}}</h5><br>
+				<h5 class="inputs"> Date joined: {{user.date_joined}}</h5><br>
+				<h5 class="inputs"> Phone: {{request.user.customer.phone}}</h5><br>
+				<h5 class="inputs">Name: {{user.last_name}} {{user.first_name}}</h5><br>
+			</div>
+		</div>
+	</div>
+
+	</div><br>
+	<div class="text-center">
+	<a class="btn btn-primary" href="{% url 'account' %}"> Edit Profile</a>
+	</div>
+	{% else %}
+	<div class='text-centter'>
+		<h5 class="text-center"> You are required to login to view Your profile</h5>
+	</div>
+	
+	<div class="text-center">
+		<a class="btn btn-success" href="{% url 'login' %}">Login</a>
+		</div>
+
+{% endif %}
+
+{% endblock %}
