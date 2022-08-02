@@ -18,6 +18,9 @@ from django.urls import reverse_lazy
 from django.contrib.auth.views import LoginView
 from.forms import *
 
+from django.forms import inlineformset_factory
+from .filters import OrderFilter
+
 # imports to register a user.
 from django.views.generic import FormView
 from .forms import RegisterForm
@@ -305,7 +308,14 @@ def play(request):
 #     return render(request, 'store/account_settings.html', context)
 
 def profile(request):
-    context = {'user':request.user}
+    orders = request.user.customer.order_set.all()
+    
+    total_orders = orders.count()
+    delivered = orders.filter(status='Delivered').count()
+    pending = orders.filter(status='Pending').count()
+
+    context = {'user':request.user, 'orders':orders, 'total_orders':total_orders,
+	'delivered':delivered,'pending':pending}
     return render(request, 'store/profile.html', context)
 
 def accountSettings(request):
@@ -322,4 +332,47 @@ def accountSettings(request):
 
   context = {'form':form}
   return render(request, 'store/account_settings.html', context)
+
+
+def userPage(request):
+	orders = request.user.customer.order_set.all()
+
+	total_orders = orders.count()
+	delivered = orders.filter(status='Delivered').count()
+	pending = orders.filter(status='Pending').count()
+
+	print('ORDERS:', orders)
+
+	context = {'orders':orders, 'total_orders':total_orders,
+	'delivered':delivered,'pending':pending}
+	return render(request, 'store/user.html', context)
+
+def customer(request, pk_test):
+	customer = Customer.objects.get(id=pk_test)
+
+	orders = customer.order_set.all()
+	order_count = orders.count()
+
+	myFilter = OrderFilter(request.GET, queryset=orders)
+	orders = myFilter.qs 
+
+	context = {'customer':customer, 'orders':orders, 'order_count':order_count,
+	'myFilter':myFilter}
+	return render(request, 'store/customer.html',context)
+
+def createOrder(request, pk):
+	OrderFormSet = inlineformset_factory(Customer, Order, fields=('product', 'status'), extra=10 )
+	customer = Customer.objects.get(id=pk)
+	formset = OrderFormSet(queryset=Order.objects.none(),instance=customer)
+	#form = OrderForm(initial={'customer':customer})
+	if request.method == 'POST':
+		#print('Printing POST:', request.POST)
+		form = OrderForm(request.POST)
+		formset = OrderFormSet(request.POST, instance=customer)
+		if formset.is_valid():
+			formset.save()
+			return redirect('/')
+
+	context = {'form':formset}
+	return render(request, 'store/order_form.html', context)
   

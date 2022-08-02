@@ -10,6 +10,12 @@ from django.contrib.auth.forms import AuthenticationForm
 from .models import *
 from django.contrib.auth.models import AbstractUser
 
+class OrderForm(ModelForm):
+	class Meta:
+		model = Order
+		fields = '__all__'
+
+
 
 class Popform(forms.ModelForm):
     class Meta:

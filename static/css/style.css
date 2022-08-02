@@ -65,12 +65,25 @@
   }
 
   .hero_area{
-    position: sticky;
+    position: fixed;
     top: 0;
-    z-index: 1000;
+    overflow: hidden;
     background-color: #00008B;
     color:rgb(242, 226, 226);
+    width: 100%;
+    z-index: 100;
   }
+
+  .odr{
+    color: red;
+  }
+  .odz{
+    color: rgb(40, 8, 201);
+  }
+
+ 
+
+
   .coni{
     background-color: #00008B;
     color:rgb(185, 14, 14);

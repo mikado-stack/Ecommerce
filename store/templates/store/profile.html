@@ -2,69 +2,6 @@
 {% load static %}
 {% block content %}
 
-<style>
-	.profile-pic{
-		max-width: 200px;
-		max-height:200px;
-		margin: 0 auto;
-		border-radius: 50%;
-	}
-	.brand-logo {
-		height: 200px;
-		width: 200px;
-	   
-		margin: auto;
-		border-radius: 50%;
-		box-sizing: border-box;
-		box-shadow: 7px 7px 10px #cbced1, -7px -7px 10px white;
-	  }
-	.col-md-3 {
-		margin: 0;
-		
-		
-		background: #ecf0f3;
-		display: flex;
-		align-items: center;
-		text-align: center;
-		justify-content: center;
-		place-items: center;
-		overflow: hidden;
-		font-family: poppins;
-	}
-	
-		
-		
-		background: #ecf0f3;
-		display: flex;
-		align-items: center;
-		justify-content: center;
-		place-items: center;
-		overflow: hidden;
-		font-family: poppins;
-	}
-	.text-centteer {
-		text-align: left;
-		margin-top: 30px;
-		display: block;
-		width: 100%;
-		padding: 0;
-		border: 10px;
-		outline: none;
-		box-sizing: border-box;
-	}
-	.inputs {
-		background: #ecf0f3;
-		padding: 10px;
-		padding-left: 20px;
-		height: 50px;
-		font-size: 14px;
-		border-radius: 50px;
-		box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
-	  }
-	
-	  
-</style>
-
 <br><br>
 {% if request.user.is_authenticated %}
 	<div class="row">
@@ -86,10 +23,24 @@
 		<div class="card card-body">
 			<div class="text-centteer">
 				<h5 class="inputs"> Username: {{ user}}</h5><br>
-				<h5 class="inputs"> Email: {{user.email}}</h5><br>
+				<h5 class="inputs">Name: {{user.last_name}} {{user.first_name}}</h5><br>
+				<h5 class="inputs"> Email: {{request.user.customer.email}}</h5><br>
 				<h5 class="inputs"> Date joined: {{user.date_joined}}</h5><br>
 				<h5 class="inputs"> Phone: {{request.user.customer.phone}}</h5><br>
-				<h5 class="inputs">Name: {{user.last_name}} {{user.first_name}}</h5><br>
+				{% if total_orders %}
+					<h5 class="inputs">Numbers of completed Orders: <strong class="odz">{{total_orders}}</strong></h5><br>
+				{% else %}
+					{% if request.user.is_authenticated %}
+					<h5 class="inputs">Numbers of completed Orders: <strong class="odz">Dear {{request.user.first_name}}, you have not placed any order</strong> </h5><br>
+					{% endif %}
+				{% endif %}
+				
+				{% if request.customer.order.complete %}
+					<h5 class="inputs">Numbers of pending Orders:{{request.customer.order.complete.count.all}} </h5><br>
+				{% else %}
+					<h5 class="inputs">Numbers of pending Orders: <strong class="odr"> No pending orders</strong </h5><br>
+					
+				{% endif %}
 			</div>
 		</div>
 	</div>

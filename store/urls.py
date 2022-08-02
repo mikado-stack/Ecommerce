@@ -23,7 +23,12 @@ urlpatterns = [
 	path('contact', views.contact, name="contact"),
 	path('search', views.search, name="search"),
 	path('pop', views.pop, name="pop"),
+ 
  	path('order_confirm', views.order_confirm, name='order_confirm'),
+   	path('create_order/<str:pk>/', views.createOrder, name="create_order"),
+	path('user/', views.userPage, name="user-page"),
+ 	path('customer/<str:pk_test>/', views.customer, name="customer"),
+    
 	path('play', views.play, name='play'),
  
  
