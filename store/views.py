@@ -100,7 +100,7 @@ def store(request):
     
      products = Product.objects.all()
      arriv = Arrive.objects.all()
-     context = {'products':products, 'cartItems':cartItems,  'arriv':arriv}
+     context = {'products':products, 'cartItems':cartItems, 'user':user, 'arriv':arriv}
      return render(request, 'store/store.html', context)
  
 def slides(request):
@@ -149,9 +149,10 @@ def updateItem(request):
      print('Action:', action)
      print('productId:', productId)
      
+     pending = order.filter(status='Pending')
      customer = request.user.customer
      product = Product.objects.get(id=productId)
-     order, created = Order.objects.get_or_create(customer=customer, complete=False)
+     order, created = Order.objects.get_or_create(customer=customer, complete=False, status=pending)
      orderItem, created = OrderItem.objects.get_or_create(order=order, customer=customer, product=product)
      
      if action == 'add':
@@ -174,13 +175,13 @@ def processOrder(request):
     data = json.loads(request.body)
 
     
-
-    customer = request.user.customer
-    order, created = Order.objects.get_or_create(customer=customer, complete=False)
-
-
-    customer, order = guestOrder(request, data)
-        
+    if request.user.is_authenticated:
+        customer = request.user.customer
+        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+    
+    else:
+         customer, order = guestOrder(request, data)
+         
     
     total = float(data['form']['total'])
     order.transaction_id = transaction_id
