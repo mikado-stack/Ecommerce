@@ -18,14 +18,16 @@ class OrderForm(ModelForm):
 
 
 class Popform(forms.ModelForm):
-    class Meta:
-        model = Pop
-        fields = ['prove_of_payment']
-        def __init__(self, *args,  **kwargs): 
+    def __init__(self, *args,  **kwargs): 
             super().__init__(*args, **kwargs)
             self.fields["prove_of_payment"].widget.attrs.update({
                 'required': '',
+                'name':'prove_of_payment'
         })
+    class Meta:
+        model = Pop
+        fields = ['prove_of_payment']
+        
 
 
 class RegisterForm(UserCreationForm):
@@ -108,10 +110,37 @@ class login_user(AuthenticationForm):
         ), label='username')
         
 class CustomerForm(ModelForm):
+    def __init__(self, *args,  **kwargs): 
+        super().__init__(*args, **kwargs)
+        self.fields["email"].widget.attrs.update({
+            'required': '',
+            'name':'email',
+            'id':'email',
+            'type':'text',
+            'class':'form-input',
+            'placeholder': 'Edit your email',
+            'maxlenght':'20',
+            'minlenght':'11'
+        })
+        self.fields["phone"].widget.attrs.update({
+            'required': '',
+            'name':'phone',
+            'id':'phone',
+            'type':'text',
+            'class':'form-input',
+            'placeholder': 'edit phone number',
+            'maxlenght':'11',
+            'minlenght':'11'
+        })
+        self.fields["profile_pic"].widget.attrs.update({
+            'required': '',
+            'name':'profile_pic',
+            'id':'profile_pic'
+        })
     class Meta:
-        model = User
+        model = Customer
         fields = '__all__'
-        exclude = ['user', 'password', 'is_superuser', 'groups', 'user_permissions', 'is_staff', 'is_active', 'date_joined', 'first_name', 'last_name', 'last_login', 'username']   
+        exclude = ['user', 'name']   
             
 
 # class CommentForm(forms.ModelForm):
@@ -122,5 +151,7 @@ class CustomerForm(ModelForm):
 #             'commenter_name': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Ignor if logged in'}),
 #             'comment_body': forms.Textarea(attrs={'class': 'form-control'}),
 #         }
+
+
 
 

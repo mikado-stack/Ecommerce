@@ -48,24 +48,12 @@
 			<div class="box-element hidden" id="payment-info">
 				<strong>Fast-Link</strong> <hr>
 				<div class="text-centteer" >
-					<ul>
+					
+						<strong class="odz">FAST-LINK</strong><br>
+
+							<button id="make-payment" class="btn btn-success">Submit Order</button>
 						
-						<strong>Bank Name: Access Bank</strong><br>
 					
-					
-						<strong>Acc Name: Fast-Link</strong><br>
-					
-					
-						<strong>Acc Number: 1234567890</strong><br>
-						
-						<form method = "post", enctype="multipart/form-data">
-							{% csrf_token %}
-							{{ form.as_p }}
-							<div class="text-center">
-							<button type="submit" id="make-payment" class="btn btn-success">Submit Order</button>
-						</div>
-						 </form>
-					</ul>
 				</div>
 				
 			

@@ -23,11 +23,15 @@ urlpatterns = [
 	path('contact', views.contact, name="contact"),
 	path('search', views.search, name="search"),
 	path('pop', views.pop, name="pop"),
+ 	path('submit_pop', views.submit_pop, name="submit_pop"),	
  
  	path('order_confirm', views.order_confirm, name='order_confirm'),
    	path('create_order/<str:pk>/', views.createOrder, name="create_order"),
-	path('user/', views.userPage, name="user-page"),
+	path('user/', views.userpage, name="user"),
  	path('customer/<str:pk_test>/', views.customer, name="customer"),
+	path('dashboard', views.dashboard, name="dashboard"),
+	path('update_order/<str:pk>/', views.updateOrder, name="update_order"),
+	path('delete_order/<str:pk>/', views.deleteOrder, name="delete_order"),
     
 	path('play', views.play, name='play'),
  

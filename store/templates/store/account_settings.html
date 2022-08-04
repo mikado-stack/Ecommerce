@@ -3,12 +3,7 @@
 {% block content %}
 
 <style>
-	.profile-pic{
-		max-width: 200px;
-		max-height:200px;
-		margin: 0 auto;
-		border-radius: 50%;
-	}
+	
 </style>
 
 <br>
@@ -20,25 +15,30 @@
 			<h3 style="text-align: center">Account Settings</h3>
 			<hr>
 			{% if request.user.customer.profile_pic %}
-			<img class="profile-pic" src="{{request.user.customer.profile_pic.url}}" >
+			<img class="brand-logo" src="{{request.user.customer.profile_pic.url}}" >
 			{% else %}
-			<img class="profile-pic" src="{% static 'images/defaultimg.png' %}" >
+			<img class="brand-logo" src="{% static 'images/defaultimg.png' %}" >
 			{% endif %}
 		</div>
 	</div>
 	<div class="col-md-9">
 		<div class="card card-body">
+			<div class="text-centteer">
+				<form action="" method="POST" enctype="multipart/form-data">
+					{% csrf_token %}
+					<h5 class="inputs" name="email"> Email: {{form.email}}</h5><br>
+					<h5 class="inputs" name="phone"> Phone: {{form.phone}}</h5><br>
+					<h5 class="inputs" name="profile_pic"> Profile pic: {{form.profile_pic}}</h5><br>
+					<input class="btn btn-primary" type="submit" name="Update Information">
+				</form>
 			
-			<form method="POST" action="" enctype="multipart/form-data">
-				{% csrf_token %}
-				{{form.as_p}}
-		
-			<input class="btn btn-primary" type="submit" name="Update Information">
-			</form>
+
+				 
+					
+				
+			</div>
 		</div>
 	</div>
 </div>
-
-
 
 {% endblock %}

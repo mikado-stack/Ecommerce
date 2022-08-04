@@ -66,24 +66,24 @@ def register(request):
     return render(request, 'store/register.html', {'form':form})
 
 
+
 def login_user(request):
-    if request.method == 'POST':
-        username = request.POST['username']
-        password = request.POST['password']
-        
-        user = authenticate(request, username=username, password=password)
-        if user is not None:
-            login(request, user)
-            
-            messages.success(request, ("login successful"))
-            return redirect('store')
-        else:
-            messages.info(request, 'Username OR password is incorrect')
-            return redirect('login')
-        
-    context ={}
-    return render(request, 'store/login.html', context)
-       
+    
+	if request.method == 'POST':
+		username = request.POST.get('username')
+		password =request.POST.get('password')
+
+		user = authenticate(request, username=username, password=password)
+
+		if user is not None:
+			login(request, user)
+			return redirect('store')
+		else:
+			messages.info(request, 'Username OR password is incorrect')
+
+	context = {}
+	return render(request, 'store/login.html', context)
+  
         
 def logout_user(request):
     logout(request)
@@ -100,7 +100,7 @@ def store(request):
     
      products = Product.objects.all()
      arriv = Arrive.objects.all()
-     context = {'products':products, 'cartItems':cartItems, 'user':user, 'arriv':arriv}
+     context = {'products':products, 'cartItems':cartItems,  'arriv':arriv}
      return render(request, 'store/store.html', context)
  
 def slides(request):
@@ -172,14 +172,15 @@ def updateItem(request):
 def processOrder(request):
     transaction_id = datetime.datetime.now().timestamp()
     data = json.loads(request.body)
+
     
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
-    
-    else:
-         customer, order = guestOrder(request, data)
-         
+
+    customer = request.user.customer
+    order, created = Order.objects.get_or_create(customer=customer, complete=False)
+
+
+    customer, order = guestOrder(request, data)
+        
     
     total = float(data['form']['total'])
     order.transaction_id = transaction_id
@@ -264,13 +265,7 @@ def search(request):
 #     return redirect('store:product_details.html')
 
 def pop(request):
-    if request.user.is_authenticated:
-        customer = request.user.customer
-        order, created = Pop.objects.get_or_create(customer=customer, )
     
-    else:
-         customer, order = guestOrder(request, data)
-         
     if request.method == 'POST':
         form = Popform(request.POST, request.FILES)
         if form.is_valid():
@@ -286,36 +281,41 @@ def pop(request):
     
     context = {'cartItems':cartItems, 'order':order, 'items':items, 'form':form}
     return render(request, 'store/pop.html', context)
-   
+
+def submit_pop(request):
+    data = cartData(request)
+    cartItems = data['cartItems']
+    order = data['order']
+    items = data['items']
+    if request.method == 'POST':
+        form = Popform(request.POST, request.FILES)
+        if form.is_valid():
+            form.save()
+        messages.success(request, 'prove of payment has been reciecved, you can now process your order')
+        return redirect('pop')
+    else:
+        form = Popform
+    context = {'cartItems':cartItems, 'order':order, 'items':items, 'form':form}
+    return render(request, 'store/submit_pop.html', context)
+
 
 def play(request):
    
     return render(request, 'store/play.html')
 
-
-# def accountSettings(request):
-#     customer = request.user.customer
-#     form = CustomerForm(instance=customer)
-    
-#     if request.method == 'POST':
-#         form = CustomerForm(request.POST, request.FILES,instance=customer)
-#         if form.is_valid():
-#             form.save
-#             messages.success(request, ("Profile updated successfully"))
-#             return redirect('profile')
-            
-#     context = {'form':form}
-#     return render(request, 'store/account_settings.html', context)
-
 def profile(request):
-    orders = request.user.customer.order_set.all()
-    
-    total_orders = orders.count()
-    delivered = orders.filter(status='Delivered').count()
-    pending = orders.filter(status='Pending').count()
+    if request.user.is_authenticated:
+            
+        orders = request.user.customer.order_set.all()
+        
+        total_orders = orders.count()
+        delivered = orders.filter(status='Delivered').count()
+        pending = orders.filter(status='Pending').count()
 
-    context = {'user':request.user, 'orders':orders, 'total_orders':total_orders,
-	'delivered':delivered,'pending':pending}
+        context = {'user':request.user, 'orders':orders, 'total_orders':total_orders,
+        'delivered':delivered,'pending':pending}
+    else:
+        return redirect('login')
     return render(request, 'store/profile.html', context)
 
 def accountSettings(request):
@@ -334,7 +334,7 @@ def accountSettings(request):
   return render(request, 'store/account_settings.html', context)
 
 
-def userPage(request):
+def userpage(request):
 	orders = request.user.customer.order_set.all()
 
 	total_orders = orders.count()
@@ -346,6 +346,22 @@ def userPage(request):
 	context = {'orders':orders, 'total_orders':total_orders,
 	'delivered':delivered,'pending':pending}
 	return render(request, 'store/user.html', context)
+
+def dashboard(request):
+    orders = Order.objects.all()
+    customers = Customer.objects.all()
+
+    total_customers = customers.count()
+
+    total_orders = orders.count()
+    delivered = orders.filter(status='Delivered').count()
+    pending = orders.filter(status='Pending').count()
+
+    context = {'orders':orders, 'customers':customers,
+    'total_orders':total_orders,'delivered':delivered,
+    'pending':pending }
+
+    return render(request, 'store/dashboard.html', context)
 
 def customer(request, pk_test):
 	customer = Customer.objects.get(id=pk_test)
@@ -371,8 +387,30 @@ def createOrder(request, pk):
 		formset = OrderFormSet(request.POST, instance=customer)
 		if formset.is_valid():
 			formset.save()
-			return redirect('/')
+			return redirect('dashboard')
 
 	context = {'form':formset}
 	return render(request, 'store/order_form.html', context)
   
+def updateOrder(request, pk):
+    order = Order.objects.get(id=pk)
+    form = OrderForm(instance=order)
+    print('ORDER:', order)
+    if request.method == 'POST':
+
+        form = OrderForm(request.POST, instance=order)
+        if form.is_valid():
+            form.save()
+            return redirect('dashboard')
+
+    context = {'form':form}
+    return render(request, 'store/update_order.html', context)
+
+def deleteOrder(request, pk):
+    order = Order.objects.get(id=pk)
+    if request.method == "POST":
+        order.delete()
+        return redirect('dashboard')
+
+    context = {'item':order}
+    return render(request, 'store/delete.html', context)

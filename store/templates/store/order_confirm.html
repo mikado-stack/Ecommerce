@@ -6,9 +6,9 @@
 {% block content %}
 <div class="text-centter">
     {% if request.user.is_authenticated %}
-    <strong>Dear {{request.user}}, how do you want to make your payment?</strong>
+    <strong class="odz">Dear {{request.user.first_name}}, how do you want to make your payment?</strong>
     {% else %}
-    <strong>In order to keep proper track of your order, you are adviced to login</strong>
+    <strong class="odz">In order to keep proper track of your order, you are adviced to login</strong>
     {% endif %}
 </div>
 <br>
@@ -16,7 +16,7 @@
     <a href="{% url 'checkout' %}" class="btn btn-primary"> Credit/Debit Card</a>
 
     {% if request.user.is_authenticated %}
-    <a href="{% url 'pop' %}" class="btn btn-success">Local Bank Transfer</a>
+    <a href="{% url 'submit_pop' %}" class="btn btn-success">Local Bank Transfer</a>
     {% endif %}
     
     

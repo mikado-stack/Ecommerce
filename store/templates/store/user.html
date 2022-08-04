@@ -1,6 +1,5 @@
 {%  extends 'store/main2.html' %}
 {% block content %}
-{%  include 'store/status.html' %}
 
 <div class="row">
 	<div class="col-md">
@@ -18,7 +17,7 @@
 				<tr>
 					<td>{{order.product}}</td>
 					<td>{{order.note}}</td>
-					<td>{{order.date_created}}</td>
+					<td>{{order.date_ordered}}</td>
 					<td>{{order.status}}</td>
 				</tr>
 				{% endfor %}
