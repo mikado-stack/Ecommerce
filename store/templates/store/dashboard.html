@@ -36,7 +36,8 @@
 			
 			<table class="table table-sm">
 				<tr>
-					<th>Product</th>
+					<th>Customer</th>
+					<th>Trans Id</th>
 					<th>Date Orderd</th>
 					<th>Status</th>
 					<th>Update</th>
@@ -45,7 +46,8 @@
 
 				{% for order in orders %}
 					<tr>
-						<td>{{order.product}}</td>
+						<td>{{order.customer}}</td>
+						<td>{{order.transaction_id}}</td>
 						<td>{{order.date_ordered}}</td>
 						<td>{{order.status}}</td>
 						<td><a class="btn btn-sm btn-info" href="{% url 'update_order' order.id %}">Update</a></td>
@@ -54,9 +56,10 @@
 
 					</tr>
 				{% endfor %}
-
-		
+			
 			</table>
+			<a class="btn btn-sm btn-success" href="{% url 'orderitems' %}">View All Ordered Items</a>
+		
 		</div>
 	</div>
 

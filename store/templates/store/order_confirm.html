@@ -14,10 +14,10 @@
 <br>
 <div class="text-center">
     <a href="{% url 'checkout' %}" class="btn btn-primary"> Credit/Debit Card</a>
-
-    {% if request.user.is_authenticated %}
+ 
+    
     <a href="{% url 'submit_pop' %}" class="btn btn-success">Local Bank Transfer</a>
-    {% endif %}
+  
     
     
 </div>

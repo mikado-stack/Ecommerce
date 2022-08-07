@@ -32,6 +32,8 @@ urlpatterns = [
 	path('dashboard', views.dashboard, name="dashboard"),
 	path('update_order/<str:pk>/', views.updateOrder, name="update_order"),
 	path('delete_order/<str:pk>/', views.deleteOrder, name="delete_order"),
+    path('orderitems/', views.orderitems, name="orderitems"),
+    path('slide/', views.slide, name="slide"),
     
 	path('play', views.play, name='play'),
  

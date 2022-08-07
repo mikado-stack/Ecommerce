@@ -1,4 +1,4 @@
-{% extends 'store/main2.html' %}
+{% extends 'store/main.html' %}
 {% load static %}
 {% block content %}
      <div class="row">
@@ -7,10 +7,10 @@
 				<form id="form">
 					<div id="user-info">
 						<div class="form-field">
-							<input required class="form-control" type="text" name="name" placeholder="Name.." required>
+							<input required class="form-control" type="text" name="name" placeholder="Name..">
 						</div>
 						<div class="form-field">
-							<input required class="form-control" type="email" name="email" placeholder="Email.." required>
+							<input required class="form-control" type="email" name="email" placeholder="Email..">
 						</div>
 					</div>
 					
@@ -19,46 +19,34 @@
 						<p>Shipping Information:</p>
 						<hr>
 						<div class="form-field">
-							<input class="form-control" type="text" name="address" placeholder="Address.." required>
+							<input class="form-control" type="text" name="address" placeholder="Address..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="city" placeholder="City.." required>
+							<input class="form-control" type="text" name="city" placeholder="City..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="state" placeholder="State.." required>
+							<input class="form-control" type="text" name="state" placeholder="State..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="zipcode" placeholder="Zip code.." required>
+							<input class="form-control" type="text" name="zipcode" placeholder="Zip code..">
 						</div>
 						<div class="form-field">
-							<input class="form-control" type="text" name="country" placeholder=" country.." required>
-						</div>
-						<div class="form-field">
-							<label for="phone">Phone Number must be valid!</label>
-							<input class="form-control" type="text" name="phone" placeholder=" Phone number.." required>
+							<input class="form-control" type="text" name="country" placeholder="Zip code..">
 						</div>
 					</div>
 
 					<hr>
-					<input id="form-button" class="btn btn-primary btn-block" type="submit" value="Continue">
+					<input id="form-button" class="btn btn-success btn-block" type="submit" value="Continue">
 				</form>
 			</div>
 
 			<br>
 			<div class="box-element hidden" id="payment-info">
-				<strong>Fast-Link</strong> <hr>
-				<div class="text-centteer" >
-					
-						<strong class="odz">FAST-LINK</strong><br>
-
-							<button id="make-payment" class="btn btn-success">Submit Order</button>
-						
-					
-				</div>
-				
+				<small>Paypal Options</small>
+				<button id="make-payment">Make payment</button>
+				<div id="paypal-button-container"></div>
+			</div>
 			
-				
-			</div><br>
 		</div>
 
 		<div class="col-lg-6">
@@ -81,26 +69,25 @@
 		</div>
 	</div>
 
-	<script src="https://www.paypal.com/sdk/js?client-id=AVbVBI8fxLpA20UEaQKMg2RDcTMMscXb8pE5ShTGGxp9l2W9Ierutpjulr99N7AFJwiz2jYAEdUQlTJj&currency=USD&disable-funding=credit"></script>
+	<script src="https://www.paypal.com/sdk/js?client-id=YOUR-CLIENT-ID&currency=USD&disable-funding=credit"></script>
 
 	<script>
 		var total = '{{order.get_cart_total}}'
         // Render the PayPal button into #paypal-button-container
         paypal.Buttons({
 
-			style:{
-				color:'blue',
-				shape:'rect',
-			},
+        	style: {
+                color:  'blue',
+                shape:  'rect',
+            },
 
-    
             // Set up the transaction
             createOrder: function(data, actions) {
                 return actions.order.create({
                     purchase_units: [{
-                        amount:{
-							value: parseFloat(total).toFixed(2)
-						}
+                        amount: {
+                            value:parseFloat(total).toFixed(2)
+                        }
                     }]
                 });
             },
@@ -108,8 +95,9 @@
             // Finalize the transaction
             onApprove: function(data, actions) {
                 return actions.order.capture().then(function(details) {
-					submitFormData()
-				});
+                    // Show a success message to the buyer
+                    submitFormData()
+                });
             }
 
         }).render('#paypal-button-container');
@@ -117,7 +105,6 @@
 
 	<script type="text/javascript">
 		var shipping = '{{order.shipping}}'
-		
 
 		if (shipping == 'False'){
 		 	document.getElementById('shipping-info').innerHTML = ''
@@ -138,14 +125,14 @@
 		form.addEventListener('submit', function(e){
 	    	e.preventDefault()
 	    	console.log('Form Submitted...')
-	    	document.getElementById('form-button').classList.add("hidden")
-	    	document.getElementById('payment-info').classList.remove("hidden")
+	    	document.getElementById('form-button').classList.add("hidden");
+	    	document.getElementById('payment-info').classList.remove("hidden");
 	    })
 
 		
-	     document.getElementById('make-payment').addEventListener('click', function(e){
+	    document.getElementById('make-payment').addEventListener('click', function(e){
 	    	submitFormData()
-	    }) 
+	    })
 	    
 
 	    function submitFormData(){
@@ -162,7 +149,6 @@
 				'city':null,
 				'state':null,
 				'zipcode':null,
-				'phone':null,
 			}
 
 			if (shipping != 'False'){
@@ -170,7 +156,6 @@
 		    	shippingInfo.city = form.city.value
 		    	shippingInfo.state = form.state.value
 		    	shippingInfo.zipcode = form.zipcode.value
-				shippingInfo.phone = form.phone.value
 	    	}
 
 	    	if (user == 'AnonymousUser'){
@@ -182,7 +167,7 @@
 	    	console.log('User Info:', userFormData)
 
 	    	var url = "/process_order/"
-	    	fetch(url,{
+	    	fetch(url, {
 	    		method:'POST',
 	    		headers:{
 	    			'Content-Type':'applicaiton/json',
@@ -194,10 +179,10 @@
 	    	.then((response) => response.json())
 	    	.then((data) => {
 				console.log('Success:', data);
-				alert('Transaction completed');
-				
-			 cart = {}
-			document.cookie = 'cart=' + JSON.stringify(cart) + ";domain=;path=/"
+				alert('Transaction completed');  
+
+				cart = {}
+				document.cookie ='cart=' + JSON.stringify(cart) + ";domain=;path=/"
 
 				window.location.href = "{% url 'store' %}"
 
@@ -206,5 +191,3 @@
 	</script>
 {% endblock content %}
 
-
- 

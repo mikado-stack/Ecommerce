@@ -16,9 +16,15 @@ class Customer(models.Model):
 
 
 class Product(models.Model):
+	CATEGORY = (
+		('cloths', 'cloths'),
+		('shoes', 'shoes'),
+		('fairly used laptops', 'fairly used laptops')
+		) 
 	name = models.CharField(max_length=200)
 	price = models.DecimalField(max_digits=7, decimal_places=2)
 	price_slash = models.DecimalField(max_digits=7, decimal_places=2, default=False)
+	category = models.CharField(max_length=200, null=True, choices=CATEGORY)
 	liked = models.ManyToManyField(User, default=None, blank=True, related_name='liked')
 	description = models.TextField(max_length=2000, null=True, blank=True)
 	digital = models.BooleanField(default=False,null=True, blank=True)
@@ -79,18 +85,17 @@ class Like(models.Model):
 
 class Order(models.Model):
 	STATUS = (
-			('Pending', 'Pending'),
-			('Out for delivery', 'Out for delivery'),
-			('Delivered', 'Delivered'),
-			)
+		('Pending', 'Pending'),
+		('Out for delivery', 'Out for delivery'),
+		('Delivered', 'Delivered'),
+		)
+	product = models.ForeignKey(Product, null=True, on_delete= models.SET_NULL)
 	customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
-	product = models.ForeignKey(Product, null=True, on_delete=models.SET_NULL)
-	date_ordered = models.DateTimeField(auto_now_add=True, null=True)
+	date_ordered = models.DateTimeField(auto_now_add=True)
 	complete = models.BooleanField(default=False)
 	transaction_id = models.CharField(max_length=100, null=True)
 	status = models.CharField(max_length=200, null=True, choices=STATUS)
 	note = models.CharField(max_length=1000, null=True)
-	
      
 
 	@property
@@ -131,11 +136,14 @@ class OrderItem(models.Model):
 	order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True)
 	quantity = models.IntegerField(default=0, null=True, blank=True)
 	date_added = models.DateTimeField(auto_now_add=True)
+ 
 
 	@property
 	def get_total(self):
 		total = self.product.price * self.quantity
 		return total
+	def __str__(self):
+    		return f"{self.customer}, {self.product.name}, ({self.quantity})  {self.date_added.strftime('%a-%B-(%H:%M:%S)')}"
 
 class ShippingAddress(models.Model):
 	customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True)
@@ -148,7 +156,7 @@ class ShippingAddress(models.Model):
 	date_added = models.DateTimeField(auto_now_add=True)
 
 	def __str__(self):
-		return f"{self.address} {self.date_added.strftime('%a-%B-%Y(%H:%M:%S)')}"
+    		return f"{self.address} {self.date_added.strftime('%a-%B-%Y(%H:%M:%S)')}"
 
 	
 class Contact(models.Model):
@@ -170,13 +178,20 @@ class Slide(models.Model):
 
     def __str__(self):
         return "{} - {}".format(self.caption1, self.caption2)
-    
+    @property
+    def imageURL(self):
+					try:
+						url =self.image.url
+					except:
+						url =''
+					return url
+	
+
 class Pop(models.Model):
     customer = models.ForeignKey(Customer, on_delete=models.SET_NULL, null=True, blank=True)
     order = models.ForeignKey(Order, on_delete=models.SET_NULL, null=True, blank=True)
-    prove_of_payment = models.ImageField(null=True, blank=True )
-    date_added = models.DateTimeField(auto_now_add=True, null=True)
+    prove_of_payment = models.ImageField(null=True, blank=True)
     
     def __str__(self):
-        return f"{self.customer} {self.date_added.strftime('%Y/%m/%d(%H:%M)')}"
+        return str(self.customer)
     

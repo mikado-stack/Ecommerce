@@ -103,12 +103,11 @@ def store(request):
      context = {'products':products, 'cartItems':cartItems, 'user':user, 'arriv':arriv}
      return render(request, 'store/store.html', context)
  
-def slides(request):
-    slide = Slide.objects.all()
-    
-    context = {'slide':slide}
-     
-    return render(request, 'store/carousel.html')
+def slide(request):
+    slides = Slide.objects.all()
+    context= {'slides':slides}
+    return render (request, 'store/carousel.html', context)
+ 
 
 def cart(request):
      data = cartData(request)
@@ -145,14 +144,15 @@ def updateItem(request):
      data = json.loads(request.body)
      productId = data['productId']
      action = data['action']
+     
       
      print('Action:', action)
      print('productId:', productId)
      
-     pending = order.filter(status='Pending')
+     
      customer = request.user.customer
      product = Product.objects.get(id=productId)
-     order, created = Order.objects.get_or_create(customer=customer, complete=False, status=pending)
+     order, created = Order.objects.get_or_create(customer=customer, complete=False)
      orderItem, created = OrderItem.objects.get_or_create(order=order, customer=customer, product=product)
      
      if action == 'add':
@@ -177,7 +177,7 @@ def processOrder(request):
     
     if request.user.is_authenticated:
         customer = request.user.customer
-        order, created = Order.objects.get_or_create(customer=customer, complete=False)
+        order, created = Order.objects.get_or_create(customer=customer, complete=False,)
     
     else:
          customer, order = guestOrder(request, data)
@@ -358,7 +358,7 @@ def dashboard(request):
     delivered = orders.filter(status='Delivered').count()
     pending = orders.filter(status='Pending').count()
 
-    context = {'orders':orders, 'customers':customers,
+    context = {'orders':orders, 'total_customers':total_customers, 'customers':customers,
     'total_orders':total_orders,'delivered':delivered,
     'pending':pending }
 
@@ -409,9 +409,18 @@ def updateOrder(request, pk):
 
 def deleteOrder(request, pk):
     order = Order.objects.get(id=pk)
+    orders = OrderItem.objects.get(id=pk)
     if request.method == "POST":
         order.delete()
         return redirect('dashboard')
 
-    context = {'item':order}
+    context = {'item':order, 'orders':orders}
     return render(request, 'store/delete.html', context)
+
+def orderitems(request):
+    ordereditems = OrderItem.objects.all()
+    total_orditems = ordereditems.count()
+    
+    context = {'ordereditems':ordereditems, 'total_orditems':total_orditems}
+    
+    return render(request, 'store/orderitems.html', context)
